@@ -1,5 +1,92 @@
 <template>
   <base-card :navLinks="navLinks" @changeComp="changeComp" />
+
+  <!-- <div style="display: flex; justify-content: center; width: 100% ">
+    <p :class="{ opacityVisible: pageLoaded }" class="opacity">Klikom na logotipe naših klijenata, saznajte što oni mogu učiniti za Vas!</p>
+  </div> -->
+  <div class="top-section">
+  <div class="carousel-wrapper">
+    <div class="carousel">
+      <div
+        v-for="(company, i) in companies"
+        :key="i"
+        class="carousel-item"
+        @click="handleCompanyClick(i, company)"
+      >
+        <img :src="company.logo" :alt="company.name" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH EXPAND -->
+  <div class="search-expand-wrapper"
+      :class="{ expanded: searchExpanded }">
+
+    <button class="expand-search-btn" @click="toggleSearch">
+      {{ searchExpanded ? "Zatvori pretragu" : "Pretraži kompanije" }}
+    </button>
+
+    <div
+  v-if="searchExpanded"
+  class="search-backdrop"
+  @click="closeSearch"
+/>
+
+    <transition name="fade-slide">
+      <div v-if="searchExpanded" class="search-panel">
+      <button class="close-search-btn" @click="closeSearch">
+  ✕
+</button>
+
+        <!-- SEARCH TOP -->
+        <div class="search-top">
+          <!-- SEARCH INPUT -->
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Pretraži kompanije..."
+            class="search-input"
+          />
+
+          <!-- FILTER OPTIONS -->
+          <div class="search-options">
+            <button
+              v-for="option in searchOptions"
+              :key="option"
+              @click="selectedOption = option"
+              :class="['option-btn', { activeOption: selectedOption === option }]"
+            >
+              {{ option }}
+            </button>
+          </div>
+        </div>
+
+        <!-- RESULTS -->
+        <transition name="fade-slide">
+          <div v-if="filteredCompanies.length" class="results-window">
+            <div
+              v-for="(company, index) in filteredCompanies"
+              :key="index"
+              class="result-card"
+              @click="handleCompanyClick(index, company)"
+            >
+              <img :src="company.logo" :alt="company.name" />
+
+              <div class="result-info">
+                <p class="company-name">
+                  {{ company.name }}
+                </p>
+
+                <span class="company-category"> </span>
+              </div>
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
+  </div>
+  </div>
+
   <div class="mobileStyle">
     <!-- <div
       v-bind="$attrs"
@@ -17,20 +104,20 @@
       ></p>
     </div> -->
 
-    <div class="list ">
-    <ul class="p">
-      <li>Želite veći outreach? Pošaljite nam upit!</li>
-      <li>Želite više klijenata? Pošaljite nam upit!</li>
-      <li>Trebate ponudu? Pošaljite nam upit!</li>
-      <li>Imate ideju koju želite realizirati? Pošaljite nam upit!</li>
-      <li>Niste sigurni odakle krenuti? Pošaljite nam upit!</li>
-      <li>Želite unaprijediti svoj brend ili poslovanje? Pošaljite nam upit!</li>
-      <li>Trebate savjet, suradnju ili novu priliku? Pošaljite nam upit!</li>
-    </ul>
-    <p class="p1">
-      Za sve što vam padne na pamet — slobodno nam se javite.
-      Ne postoje kriva pitanja, postoje samo propuštene prilike!
-    </p>
+    <div class="list">
+      <ul class="p">
+        <li>Želite veći outreach? Pošaljite nam upit!</li>
+        <li>Želite više klijenata? Pošaljite nam upit!</li>
+        <li>Trebate ponudu? Pošaljite nam upit!</li>
+        <li>Imate ideju koju želite realizirati? Pošaljite nam upit!</li>
+        <li>Niste sigurni odakle krenuti? Pošaljite nam upit!</li>
+        <li>Želite unaprijediti svoj brend ili poslovanje? Pošaljite nam upit!</li>
+        <li>Trebate savjet, suradnju ili novu priliku? Pošaljite nam upit!</li>
+      </ul>
+      <p class="p1">
+        Za sve što vam padne na pamet — slobodno nam se javite. Ne postoje kriva pitanja,
+        postoje samo propuštene prilike!
+      </p>
     </div>
     <!-- <div
     style="
@@ -48,9 +135,7 @@
     <div class="contactBox">
       <div :class="['contactBox2']">
         <form @submit.prevent="submitForm" id="form">
-          <p style="font-weight: bold; text-decoration: underline">
-            Pošaljite nam upit!
-          </p>
+          <p style="font-weight: bold; text-decoration: underline">Pošaljite nam upit!</p>
           <input
             id="name"
             autocomplete="on"
@@ -77,12 +162,12 @@
           >
           </textarea>
           <div class="consent-box">
-  <input type="checkbox" id="consent" required />
-  
-  <label for="consent">
-    Slažem se s obradom osobnih podataka u svrhu odgovora na upit.
-  </label>
-</div>
+            <input type="checkbox" id="consent" required />
+
+            <label for="consent">
+              Slažem se s obradom osobnih podataka u svrhu odgovora na upit.
+            </label>
+          </div>
           <button id="send" :disabled="loading" type="submit">
             {{ loading ? "Slanje..." : "Pošalji nam poruku" }}
           </button>
@@ -91,39 +176,70 @@
             {{ errorMessage }}
           </p>
         </form>
-        <div style="display: flex; justify-content: center; width:100%; flex-wrap: wrap;">
-  <p>Kontaktirajte nas direktno:</p>
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <p>Kontaktirajte nas direktno:</p>
 
-<div style="display: flex; flex-flow: row; justify-content: flex-start; align-items: center; width: 100%; gap: 20px;">
- <div class="emails">
+          <div
+            style="
+              display: flex;
+              flex-flow: row;
+              justify-content: flex-start;
+              align-items: center;
+              width: 100%;
+              gap: 20px;
+            "
+          >
+            <div class="emails">
+              <div class="email-grid">
+                <div
+                  style="
+                    display: flex;
+                    flex-flow: column;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <div
+                    style="display: flex; align-items: center"
+                    @click="openEmail('info@ribaprofitlab.com')"
+                  >
+                    <span class="icon">✉</span>
+                    <span class="label">info@ribaprofitlab.com</span>
+                  </div>
+                  <button class="copy" @click.stop="copyEmail('info@ribaprofitlab.com')">
+                    Kopiraj email
+                  </button>
+                  <div
+                    style="
+                      display: flex;
+                      flex-flow: row;
+                      justify-content: flex-end;
+                      align-items: center;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <span class="icon">📞</span>
+                    <span
+                      href="tel:+385977947589"
+                      class="label phone-link"
+                      @click="callNumber('+385977947589')"
+                      >+385 97 794 7589</span
+                    >
+                  </div>
+                  <button class="copy" @click.stop="copyPhone('+385977947589')">
+                    Kopiraj broj
+                  </button>
 
-  <div class="email-grid">
-  <div style="display: flex; flex-flow: column; align-items: center; width: 100%;">
-    <div style="display: flex; align-items: center;" @click="openEmail('info@ribaprofitlab.com')">
-      <span class="icon">✉</span>
-      <span class="label">info@ribaprofitlab.com</span>
-    </div>
-    <button class="copy" @click.stop="copyEmail('info@ribaprofitlab.com')">
-        Kopiraj email
-      </button>
-      <div style="display: flex; flex-flow: row; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-        <span class="icon">📞</span>
-        <span href="tel:+385977947589" class="label phone-link" @click="callNumber('+385977947589')">+385 97 794 7589</span>
-      </div>
-      <button class="copy" @click.stop="copyPhone('+385977947589')">
-    Kopiraj broj
-  </button>
-
-    <!-- <div class="email-card" @click="openEmail('davor@rpl.com')">
+                  <!-- <div class="email-card" @click="openEmail('davor@rpl.com')">
       <span class="icon">✉</span>
       <span class="label">davor@rpl.com</span>
       <button class="copy" @click.stop="copyEmail('davor@rpl.com')">
          Kopiraj
       </button>
     </div> -->
-    </div>
+                </div>
 
-  <!-- <div style="display: flex; flex-flow: column; align-items: center;">
+                <!-- <div style="display: flex; flex-flow: column; align-items: center;">
     <div class="email-card" @click="openEmail('karlo@rpl.com')">
       <span class="icon">✉</span>
       <span class="label">karlo@rpl.com</span>
@@ -140,37 +256,25 @@
       </button>
     </div>
     </div> -->
-  </div>
-</div></div>
-      </div></div>
-      
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- MOVE COOKIE BAR HERE -->
-<Teleport to="body">
-  <div v-if="showCookies" class="cookie-bar">
-    <p>Ova stranica koristi osnovne kolačiće potrebne za rad stranice i obradu kontakt forme.</p>
-    <button @click="acceptCookies">U redu</button>
-  </div>
-</Teleport>
+      <Teleport to="body">
+        <div v-if="showCookies" class="cookie-bar">
+          <p>
+            Ova stranica koristi osnovne kolačiće potrebne za rad stranice i obradu
+            kontakt forme.
+          </p>
+          <button @click="acceptCookies">U redu</button>
+        </div>
+      </Teleport>
     </div>
   </div>
-  <div style="display: flex; justify-content: center; width: 100% ">
-    <p :class="{ opacityVisible: pageLoaded }" class="opacity">Klikom na logotipe naših klijenata, saznajte što oni mogu učiniti za Vas!</p>
-  </div>
-  <div class="carousel-wrapper">
-    <div class="carousel">
-      <div
-  v-for="(company, i) in companies"
-  :key="i"
-  class="carousel-item"
-   @click="handleCompanyClick(i, company)"
->
-  <img
-    :src="company.logo"
-    :alt="company.name"
-  />
-</div>
-    </div>
-  </div>
+
   <!-- <div style="display: flex; justify-content: center; width: 50%;">
       
       <div :class="['contactBox']">
@@ -255,25 +359,37 @@ export default {
       showCookies: true,
 
       pageLoaded: false,
+
+      searchExpanded: false,
+
+      searchQuery: "",
+
+      selectedOption: "Sve",
+
+      searchOptions: ["Sve", "Marketing", "Development", "Finance", "Sales", "Design"],
     };
   },
 
   beforeUnmount() {
+     document.removeEventListener("keydown", this.handleEsc);
+
     clearInterval(this.autoPlay);
 
     window.removeEventListener("resize", this.animateCarousel);
   },
 
   mounted() {
-     window.addEventListener("load", () => {
-    this.pageLoaded = true;
-     });
+    document.addEventListener("keydown", this.handleEsc);
+  
+    window.addEventListener("load", () => {
+      this.pageLoaded = true;
+    });
 
-     window.addEventListener("resize", this.animateCarousel);
+    window.addEventListener("resize", this.animateCarousel);
 
     if (localStorage.getItem("cookiesAccepted")) {
-  this.showCookies = false;
-}
+      this.showCookies = false;
+    }
     //     const spiral = document.getElementById("spiral");
 
     //     const radius = 120;
@@ -350,13 +466,12 @@ export default {
     //     animate();
 
     this.$nextTick(() => {
-  this.animateCarousel();
+      this.animateCarousel();
 
-  this.autoPlay = setInterval(() => {
-    this.nextSlide();
-  }, 3000);
-});
-
+      this.autoPlay = setInterval(() => {
+        this.nextSlide();
+      }, 3000);
+    });
 
     // const textElement = document.querySelector(".typeMe");
     // const text2Element = document.querySelector(".typeMe2");
@@ -393,101 +508,140 @@ export default {
     //   },
     // );
   },
-  methods: {
 
-   callNumber(number) {
-  window.location.href = `tel:${number}`;
-},
+  computed: {
+    filteredCompanies() {
+      return this.companies.filter((company) => {
+        const query = this.searchQuery.toLowerCase();
 
-  async copyPhone(number) {
-  try {
-    await navigator.clipboard.writeText(number);
-    this.errorMessage = "Broj kopiran!";
-    setTimeout(() => (this.errorMessage = ""), 1500);
-  } catch (e) {
-    console.error("Copy failed", e);
-  }
-},
+        /* SEARCH COMPANY NAME */
+        const matchesName = company.name.toLowerCase().includes(query);
 
-    openEmail(email) {
-    window.location.href = `mailto:${email}`;
+        /* SEARCH CATEGORY */
+        const matchesCategorySearch = Array.isArray(company.category)
+          ? company.category.some((category) => category.toLowerCase().includes(query))
+          : company.category.toLowerCase().includes(query);
+
+        /* FILTER BUTTONS */
+        const matchesSelectedOption =
+          this.selectedOption === "Sve"
+            ? true
+            : Array.isArray(company.category)
+            ? company.category.includes(this.selectedOption)
+            : company.category === this.selectedOption;
+
+        return (matchesName || matchesCategorySearch) && matchesSelectedOption;
+      });
+    },
   },
 
-  async copyEmail(email) {
-    try {
-      await navigator.clipboard.writeText(email);
-      this.errorMessage = "E-mail kopiran!";
-      setTimeout(() => (this.errorMessage = ""), 1500);
-    } catch (e) {
-      console.error("Copy failed", e);
+  methods: {
+
+    closeSearch() {
+    this.searchExpanded = false;
+  },
+
+    handleEsc(e) {
+    if (e.key === "Escape") {
+      this.closeSearch();
     }
+  },
+
+    toggleSearch() {
+      this.searchExpanded = !this.searchExpanded;
     },
-  
+
+    callNumber(number) {
+      window.location.href = `tel:${number}`;
+    },
+
+    async copyPhone(number) {
+      try {
+        await navigator.clipboard.writeText(number);
+        this.errorMessage = "Broj kopiran!";
+        setTimeout(() => (this.errorMessage = ""), 1500);
+      } catch (e) {
+        console.error("Copy failed", e);
+      }
+    },
+
+    openEmail(email) {
+      window.location.href = `mailto:${email}`;
+    },
+
+    async copyEmail(email) {
+      try {
+        await navigator.clipboard.writeText(email);
+        this.errorMessage = "E-mail kopiran!";
+        setTimeout(() => (this.errorMessage = ""), 1500);
+      } catch (e) {
+        console.error("Copy failed", e);
+      }
+    },
+
     acceptCookies() {
-  localStorage.setItem("cookiesAccepted", "true");
-  this.showCookies = false;
+      localStorage.setItem("cookiesAccepted", "true");
+      this.showCookies = false;
     },
 
-   animateCarousel() {
-  const items = document.querySelectorAll(".carousel-item");
-     const total = this.companies.length;
-  
+    animateCarousel() {
+      const items = document.querySelectorAll(".carousel-item");
+      const total = this.companies.length;
 
-  const spacing = Math.max(60, window.innerWidth * 0.22);
+      const spacing = Math.max(60, window.innerWidth * 0.22);
 
-  items.forEach((item, i) => {
-    // IMPORTANT: ensure proper centering anchor once
-    gsap.set(item, {
-      xPercent: -50,
-      yPercent: -50
-    });
+      items.forEach((item, i) => {
+        // IMPORTANT: ensure proper centering anchor once
+        gsap.set(item, {
+          xPercent: -50,
+          yPercent: -50,
+        });
 
-    let offset = i - this.currentIndex;
+        let offset = i - this.currentIndex;
 
-    if (offset > total / 2) offset -= total;
-    if (offset < -total / 2) offset += total;
+        if (offset > total / 2) offset -= total;
+        if (offset < -total / 2) offset += total;
 
-    gsap.to(item, {
-      x: offset * spacing,
-      scale: offset === 0 ? 0.85 : 0.85,
-      opacity: Math.abs(offset) > 2 ? 0 : 1,
-      zIndex: 1000 - Math.abs(offset),
-      duration: 0.6,
-      ease: "power2.out",
-      overwrite: true
-    });
-  });
-},
+        gsap.to(item, {
+          x: offset * spacing,
+          scale: offset === 0 ? 0.85 : 0.85,
+          opacity: Math.abs(offset) > 2 ? 0 : 1,
+          zIndex: 1000 - Math.abs(offset),
+          duration: 0.6,
+          ease: "power2.out",
+          overwrite: true,
+        });
+      });
+    },
 
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.companies.length;
 
-  this.animateCarousel();
-},
+      this.animateCarousel();
+    },
 
-prevSlide() { this.currentIndex =
-    (this.currentIndex - 1 + this.companies.length) %
-    this.companies.length;
+    prevSlide() {
+      this.currentIndex =
+        (this.currentIndex - 1 + this.companies.length) % this.companies.length;
 
-  this.animateCarousel();
-},
+      this.animateCarousel();
+    },
 
-goToSlide(index) {
-  this.currentIndex = index;
-  this.animateCarousel();
-},
+    goToSlide(index) {
+      this.currentIndex = index;
+      this.animateCarousel();
+    },
 
+    handleCompanyClick(i, company) {
+      this.currentIndex = i;
+      this.animateCarousel();
 
-   handleCompanyClick(i, company) {
-  this.currentIndex = i;
-  this.animateCarousel();
-
-  if (company.url) {
-    setTimeout(() => {
-      window.open(company.url, "_blank");
-    }, 300);
-  }
-},
+      if (company.url) {
+        setTimeout(() => {
+          window.open(company.url, "_blank");
+        }, 300);
+      }
+    },
 
     async submitForm() {
       this.loading = true;
@@ -503,7 +657,7 @@ goToSlide(index) {
             from_email: this.form.email,
             message: this.form.message,
           },
-          "w6HVNSaRoqA-XXhZh",
+          "w6HVNSaRoqA-XXhZh"
         );
 
         this.success = true;
@@ -527,7 +681,7 @@ goToSlide(index) {
     async onAnimationComplete() {
       await nextTick();
 
-       this.pageLoaded = true;
+      this.pageLoaded = true;
 
       const anchorEl = document.querySelectorAll("a");
 
@@ -544,7 +698,7 @@ goToSlide(index) {
               opacity: 1,
               duration: 0.5,
               x: 1000,
-            },
+            }
           );
         });
       } else {
@@ -558,7 +712,7 @@ goToSlide(index) {
               opacity: 1,
               duration: 0.5,
               x: 0,
-            },
+            }
           );
         });
       }
@@ -570,47 +724,47 @@ goToSlide(index) {
 <style>
 p {
   color: #001f3f;
-  font-size: 20px!important;
+  font-size: 20px !important;
   font-family: "Montserrat", sans-serif;
   /* line-height: 50px!important; */
-  width: 70%!important;
-  text-align: center!important;
-  opacity: 1!important;
+  width: 70% !important;
+  text-align: center !important;
+  opacity: 1 !important;
 }
 
 .p1 {
   color: #001f3f;
-  font-size: 55px!important;
+  font-size: 55px !important;
   font-family: "Montserrat", sans-serif;
-  line-height: 50px!important;
-  text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001,
-    0 0 9px #001f, 0 0 14px #001f3f;
+  line-height: 50px !important;
+  text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001, 0 0 9px #001f,
+    0 0 14px #001f3f;
 }
 
 .p2 {
   color: white;
-  font-size: 55px!important;
+  font-size: 55px !important;
   font-family: "Montserrat", sans-serif;
   line-height: 50px;
   text-shadow: 0 0 2.5px #001, 0 0 5px #001f, 0 0 10px #001f3f;
 }
 
 .navBarContainer {
-  display: flex!important;
-  flex-flow: row!important;
+  display: flex !important;
+  flex-flow: row !important;
   width: 65%;
-  justify-content: start!important;
+  justify-content: start !important;
   height: 15%;
 }
 
 .navBar {
-  display: flex!important;
-  flex-flow: row!important;
-  flex-wrap: wrap!important;
-  align-items: center!important;
-  width: 100%!important;
+  display: flex !important;
+  flex-flow: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  width: 100% !important;
   height: 175px;
-  justify-content: space-evenly!important;
+  justify-content: space-evenly !important;
 }
 
 .nav-left,
@@ -623,42 +777,42 @@ p {
 }
 
 .descriptionContent {
-  display: flex!important;
-  flex-flow: column!important;
-  height: 100%!important;
-  width: 100%!important;
-  justify-content: space-evenly!important;
+  display: flex !important;
+  flex-flow: column !important;
+  height: 100% !important;
+  width: 100% !important;
+  justify-content: space-evenly !important;
 }
 
 .descriptionContentReverse {
-  display: flex!important;
-  flex-flow: column!important;
-  height: 100%!important;
-  width: 100%!important;
-  justify-content: flex-start!important;
-  margin-left: auto!important;
+  display: flex !important;
+  flex-flow: column !important;
+  height: 100% !important;
+  width: 100% !important;
+  justify-content: flex-start !important;
+  margin-left: auto !important;
 }
 
 .typeMe {
   position: relative;
   text-align: center;
   font-display: swap;
-  width: 80%!important;
+  width: 80% !important;
 }
 
 .typeMe2 {
   position: relative;
   text-align: right;
   font-display: swap;
-  width: 70%!important;
+  width: 70% !important;
 }
 
 .specialHpClass {
-display: flex!important;
-  flex-flow: column!important;
-  height: 700px!important;
-  width: 100%!important;
-  justify-content: center!important;
+  display: flex !important;
+  flex-flow: column !important;
+  height: 700px !important;
+  width: 100% !important;
+  justify-content: center !important;
 }
 
 .color1 {
@@ -668,34 +822,32 @@ display: flex!important;
 
 .color2 {
   color: #001f3f !important;
-  text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001,
-    0 0 9px #001f, 0 0 14px #001f3f;
+  text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001, 0 0 9px #001f,
+    0 0 14px #001f3f;
 }
 
 .contactBox {
-  display: flex!important;
-  flex-flow: column!important;
-  justify-content: space-evenly!important;
-  height: 100%!important;
-  opacity: 0.8!important;
-  border-radius: 20px!important;
-  width: 100%!important;
+  display: flex !important;
+  flex-flow: column !important;
+  justify-content: space-evenly !important;
+  height: 100% !important;
+  opacity: 0.8 !important;
+  border-radius: 20px !important;
+  width: 100% !important;
   position: relative;
-  padding: 10px!important;
+  padding: 10px !important;
 }
 
 .contactBox2 {
-  display: flex!important;
-  flex-flow: column!important;
-  justify-content: space-evenly!important;
-  opacity: 0.8!important;
-  border-radius: 20px!important;
-  width: 100%!important;
+  display: flex !important;
+  flex-flow: column !important;
+  justify-content: space-evenly !important;
+  opacity: 0.8 !important;
+  border-radius: 20px !important;
+  width: 100% !important;
   position: relative;
-  padding: 10px!important;
+  padding: 10px !important;
 }
-
-
 
 /* background-color: #eef3f8 !important;
 border: 1px solid rgba(0, 31, 63, 0.08) !important;
@@ -735,7 +887,7 @@ ul.p li {
   font-family: "Montserrat", sans-serif;
   transition: 0.3s ease;
   border: 1px solid #001f3f;
-  font-size: 16px!important;
+  font-size: 16px !important;
   opacity: 0.9;
   height: 50px;
   margin-bottom: 10px;
@@ -757,19 +909,17 @@ ul.p li:nth-child(even) {
 ul.p li:hover {
   transform: translateY(-3px);
 
-  box-shadow:
-    0 10px 25px #001f3f
-    0 4px 10px #001f3f;
+  box-shadow: 0 10px 25px #001f3f 0 4px 10px #001f3f;
 }
 
 ul.p li:nth-child(even) {
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
 }
 
 button {
   color: #001f3f;
-  height: 30px!important;
+  height: 30px !important;
 }
 
 input {
@@ -789,13 +939,13 @@ input:focus {
 }
 
 textarea {
-   border-radius: 5px;
+  border-radius: 5px;
 }
 
 textarea:focus {
   outline: none;
   border-color: #001f3f;
-  box-shadow: 0 0 5px rgba(0, 31, 63, 0.3)!important;
+  box-shadow: 0 0 5px rgba(0, 31, 63, 0.3) !important;
 }
 
 textarea:hover,
@@ -804,10 +954,10 @@ textarea:focus {
 }
 
 #form {
-  display: flex!important;
-  flex-flow: column!important;
-  justify-content: space-evenly!important;
-  width: 500px!important;
+  display: flex !important;
+  flex-flow: column !important;
+  justify-content: space-evenly !important;
+  width: 500px !important;
   /* height: 550px!important; */
 }
 
@@ -819,13 +969,7 @@ textarea:focus {
   align-items: center;
   position: relative;
   overflow: hidden;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 15%,
-    black 85%,
-    transparent
-  );
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
   width: 100%;
 }
 
@@ -876,7 +1020,7 @@ textarea:focus {
 
 .carousel {
   width: 100%;
-  height: 0%;  
+  height: 0%;
   position: relative;
   overflow: visible;
   display: flex;
@@ -947,7 +1091,7 @@ textarea:focus {
   justify-content: space-between !important;
   gap: 12px !important;
 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
   z-index: 99999 !important;
 }
 
@@ -983,28 +1127,31 @@ textarea:focus {
 .list {
   display: flex;
   flex-flow: column;
-  height: 100%!important;
-  width: 100%!important;
-  justify-content: flex-end!important;
-  align-items: center!important;
+  height: 100% !important;
+  width: 100% !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
 }
 
-#info, #davor, #karlo, #ivan {
-  opacity: 1!important;
+#info,
+#davor,
+#karlo,
+#ivan {
+  opacity: 1 !important;
   display: flex;
   flex-flow: row;
-  color: #001f3f!important;
-  text-decoration: none!important;
+  color: #001f3f !important;
+  text-decoration: none !important;
   font-size: 22px;
   width: 100%;
 }
 
 .emails {
   display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .emails a {
@@ -1045,7 +1192,7 @@ textarea:focus {
   cursor: pointer;
 
   transition: 0.25s ease;
-  width: 100%!important;
+  width: 100% !important;
 }
 
 .email-card:hover {
@@ -1067,20 +1214,20 @@ textarea:focus {
 }
 
 .copy {
-  top: 0px!important;
-  position: relative!important;
-  background: transparent!important;
-  border: 1px solid #001f3f!important;
-  color: #001f3f!important;
+  top: 0px !important;
+  position: relative !important;
+  background: transparent !important;
+  border: 1px solid #001f3f !important;
+  color: #001f3f !important;
 
-  padding: 4px 10px!important;
-  border-radius: 8px!important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
 
-  font-size: 12px!important;
+  font-size: 12px !important;
 
-  cursor: pointer!important;
-  transition: 0.2s ease!important;
-  left: 10px!important;
+  cursor: pointer !important;
+  transition: 0.2s ease !important;
+  left: 10px !important;
   width: 50%;
 }
 
@@ -1100,14 +1247,211 @@ textarea:focus {
 }
 
 .mobileStyle {
-    display: flex!important;
-    align-items: center!important;
-    flex-flow: row!important;
-    justify-content: space-between!important;
-    height: 550px;
-  }
+  display: flex !important;
+  align-items: center !important;
+  flex-flow: row !important;
+  justify-content: space-between !important;
+  height: 550px;
+  position: relative;
+  z-index: 2;
+}
 
 .logo {
-  width:auto!important;
+  width: auto !important;
+}
+
+.search-expand-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;   /* NOT absolute */
+    min-height: 70px;
+    overflow: visible;
+}
+
+.expand-search-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #001f3f;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
+  width: 25%;
+}
+.expand-search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 31, 63, 0.25);
+}
+
+.search-panel{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(1100px,92%);
+    max-height:70vh;
+    overflow-y:auto;
+    background:white;
+    border-radius:24px;
+    padding:28px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.18);
+
+    z-index:9999;
+}
+
+.search-top {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.search-input {
+  width: 95%;
+  height: 58px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 31, 63, 0.15);
+  padding: 0 20px;
+  font-size: 16px;
+  font-family: "Montserrat", sans-serif;
+  background: rgba(255, 255, 255, 0.9);
+  transition: 0.3s ease;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #001f3f;
+  box-shadow: 0 0 0 4px rgba(0, 31, 63, 0.08);
+}
+.search-options {
+  display: flex;
+  gap: 12px;
+}
+.option-btn {
+  border: 1px solid #001f3f;
+  background: transparent;
+  color: #001f3f;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+.option-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 31, 63, 0.06);
+}
+.activeOption {
+  background: #001f3f;
+  color: white;
+}
+.results-window {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 31, 63, 0.08);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 31, 63, 0.12);
+}
+.result-card img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+.result-info {
+  display: flex;
+  flex-direction: column;
+}
+.company-name {
+  width: auto !important;
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: 700;
+  color: #001f3f;
+  text-align: left !important;
+}
+.company-category {
+  font-size: 13px;
+  color: rgba(0, 31, 63, 0.7);
+} /* ANIMATION */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.35s ease;
+}
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.search-expand-wrapper.expanded .search-panel {
+  z-index: 9999;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(6px);
+  z-index: 9998;
+}
+
+.close-search-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(0, 31, 63, 0.2);
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.close-search-btn:hover {
+  transform: scale(1.05);
+  background: rgba(0, 31, 63, 0.05);
+}
+
+.top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 </style>

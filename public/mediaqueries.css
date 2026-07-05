@@ -229,6 +229,75 @@ a {
   padding: 10px!important;
 }
 
+.expand-search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #001f3f;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
+    width: 50%;
+
+}
+
+.expand-search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #001f3f;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
+
+}
+
+.search-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+}
+
+.option-btn {
+    border: 1px solid #001f3f;
+    background: transparent;
+    color: #001f3f;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    /* height: 50px; */
+    width: auto;
+}
+
+.search-input {
+    width: 85%;
+    height: 58px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 31, 63, 0.15);
+    padding: 0 20px;
+    font-size: 16px;
+    font-family: "Montserrat", sans-serif;
+    background: rgba(255, 255, 255, 0.9);
+    transition: 0.3s ease;
+}
+
 }
 
 
@@ -626,7 +695,7 @@ ul.p li {
     flex-direction: row!important;
     flex-wrap: wrap!important;
     justify-content: space-evenly !important;
-    height: 200px;
+    padding-top: 0px;
   }
 
   .navBar a,
@@ -787,8 +856,10 @@ ul.p li {
 }
 
 .carousel {
-        height: auto;
-    }
+    position: relative;
+    width: 100%;
+    height: 160px;   /* or 180px */
+}
 
 .section-title {
     font-size: 22px!important;
@@ -811,6 +882,27 @@ ul.p li {
 
 .logo {
   width:auto!important;
+}
+
+.carousel-wrapper {
+        height: 100px;
+}
+
+.expand-search-btn {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #001f3f;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-family: "Montserrat", sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
 }
   
 }
