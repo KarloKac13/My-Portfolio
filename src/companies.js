@@ -43,7 +43,7 @@ export const companies = [
   },
   {
     name: "Nibiru",
-    logo: "/companyImages/nibirulogo.png",
+    logo: "/companyImages/nibiruLogo.png",
     url: "https://www.instagram.com/caffee.bar.nibiru?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
     category: "Marketing",
   },
