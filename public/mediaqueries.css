@@ -222,7 +222,7 @@ a {
   flex-flow: column!important;
   justify-content: space-evenly!important;
   height: 100%!important;
-  opacity: 0.8!important;
+  opacity: 1!important;
   border-radius: 20px!important;
   width: 100%!important;
   position: relative;
@@ -439,7 +439,7 @@ ul.p li {
   flex-flow: column!important;
   justify-content: space-evenly!important;
   height: 100%!important;
-  opacity: 0.8!important;
+  opacity: 1!important;
   border-radius: 20px!important;
   width: 100%!important;
   position: relative;
@@ -790,7 +790,7 @@ textarea {
     height: auto !important;
     width: 100% !important;
     align-items: center !important;
-    justify-content: start !important;
+    justify-content: center !important;
 
 }
 
@@ -814,27 +814,36 @@ ul.p li {
     display: flex !important;
     flex-flow: column !important;
     justify-content: space-evenly !important;
-    width: 500px !important;
+    width: 40% !important;
+    align-items: center !important;
     /* height: 550px !important; */
 }
 
 .label {
     font-size: 18px;
-    color: #001f3f;
+    color: white;
     font-family: "Montserrat", sans-serif;
+    opacity: 1 !important;
+    border-radius: 2px;
 }
 
 .icon {
     font-size: 20px;
     color: #001f3f;
+    font-family: "Montserrat", sans-serif;
+    opacity: 1 !important;
+    border-radius: 2px;
+}
+
+.copy{
+  width: 30%;
 }
 
 .mobileStyle {
     display: flex !important;
     align-items: center !important;
-    flex-flow: row !important;
     justify-content: space-between !important;
-    height: 550px;
+    height: 600px !important;
   
 }
 
@@ -873,7 +882,7 @@ ul.p li {
   .contactBox {
   display: flex!important; 
   justify-content: center!important; 
-  width: 50%!important;
+  width: 100%!important;
 }
 
 .paragraphCenter {
@@ -906,4 +915,3 @@ ul.p li {
 }
   
 }
-

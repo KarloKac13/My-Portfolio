@@ -125,6 +125,14 @@ Omogućujemo moderno i učinkovito oglašavanje na našem webu kako bismo vašem
               <span style="text-decoration: underline;" class="email-card2 label" @click="openEmail('ivan@ribaprofitlab.com')">ivan@ribaprofitlab.com</span>
               </span>
             </span>
+            <br>
+            <span style="width: 100%: left; display: flex; flex-flow: column; align-items: center; justify-content: center;">
+              <span class="label">Martin Brozović</span>
+              <span style="width: 100%: left; display: flex; align-items: center; justify-content: center;">
+              <span class="icon">✉</span>
+              <span style="text-decoration: underline;" class="email-card2 label" @click="openEmail('martin@ribaprofitlab.com')">martin@ribaprofitlab.com</span>
+              </span>
+            </span>
           </p>
         </div>
         
@@ -370,6 +378,8 @@ box-shadow:
 
 .label {
   width: 100%;
+  color: #001f3f;
+  background-color: transparent;
 }
 
 .email-card2 {

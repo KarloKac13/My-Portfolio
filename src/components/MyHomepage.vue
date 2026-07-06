@@ -176,7 +176,7 @@
             {{ errorMessage }}
           </p>
         </form>
-        <div style="display: flex; justify-content: center; width: 100%;">
+        <div style="display: flex; justify-content: center; width: 100%; flex-flow: column; align-items: center; gap: 10px">
           <p>Kontaktirajte nas direktno:</p>
 
           <div
@@ -839,14 +839,15 @@ p {
 }
 
 .contactBox2 {
-  display: flex !important;
-  flex-flow: column !important;
-  justify-content: space-evenly !important;
-  opacity: 0.8 !important;
-  border-radius: 20px !important;
-  width: 100% !important;
-  position: relative;
-  padding: 10px !important;
+    display: flex !important;
+    flex-flow: column;
+    justify-content: center !important;
+    opacity: 0.8 !important;
+    border-radius: 20px !important;
+    width: 100% !important;
+    position: relative;
+    padding: 10px !important;
+    align-items: center;
 }
 
 /* background-color: #eef3f8 !important;
@@ -1209,16 +1210,18 @@ textarea:focus {
 
 .label {
   flex: 1;
-  color: #001f3f;
+  color: white;
   font-weight: 500;
+  background-color: #001f3f;
+  opacity: 1 !important;
 }
 
 .copy {
   top: 0px !important;
   position: relative !important;
-  background: transparent !important;
+  background: #001f3f !important;
   border: 1px solid #001f3f !important;
-  color: #001f3f !important;
+  color: white !important;
 
   padding: 4px 10px !important;
   border-radius: 8px !important;
@@ -1237,7 +1240,7 @@ textarea:focus {
 }
 
 .phone-link {
-  color: #001f3f;
+  color: white;
   text-decoration: none;
   cursor: pointer;
 }
@@ -1250,7 +1253,7 @@ textarea:focus {
   display: flex !important;
   align-items: center !important;
   flex-flow: row !important;
-  justify-content: space-between !important;
+  justify-content: center !important;
   height: 550px;
   position: relative;
   z-index: 2;
@@ -1286,6 +1289,7 @@ textarea:focus {
   transition: 0.3s ease;
   box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
   width: 25%;
+  opacity: 0.9;
 }
 .expand-search-btn:hover {
   transform: translateY(-2px);
@@ -1455,3 +1459,6 @@ textarea:focus {
   height: 100%;
 }
 </style>
+
+
+phone-link

@@ -15,13 +15,13 @@ export const companies = [
     name: "Herlig",
     logo: "/companyImages/Herligremovebgpreview.png",
     url: "https://herliginternational.com/",
-    category: ["Marketing","alati"]
+    category: ["Marketing", "alati"],
   },
   {
     name: "aTeam",
     logo: "/companyImages/aTeamremovebgpreview.png",
     url: "https://www.facebook.com/ateameffect?locale=hr_HR",
-    category: ["Development","hrana"],
+    category: ["Development", "hrana"],
   },
   {
     name: "pNp",
@@ -40,5 +40,11 @@ export const companies = [
     logo: "/companyImages/domacaprica-removebg-preview.png",
     url: "https://www.instagram.com/domaca_prica__/",
     category: "Sales",
+  },
+  {
+    name: "Nibiru",
+    logo: "/companyImages/nibirulogo.png",
+    url: "https://www.instagram.com/caffee.bar.nibiru?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+    category: "Marketing",
   },
 ];
