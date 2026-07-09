@@ -42,22 +42,26 @@
         <div class="search-top">
           <!-- SEARCH INPUT -->
           <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Pretraži kompanije..."
-            class="search-input"
-          />
+ v-model="searchQuery"
+ @input="selectedOption='Sve'"
+ type="text"
+ placeholder="Pretraži kompanije..."
+ class="search-input"
+/>
 
           <!-- FILTER OPTIONS -->
           <div class="search-options">
             <button
-              v-for="option in searchOptions"
-              :key="option"
-              @click="selectedOption = option"
-              :class="['option-btn', { activeOption: selectedOption === option }]"
-            >
-              {{ option }}
-            </button>
+  v-for="option in searchOptions"
+  :key="option"
+  @click="selectCategory(option)"
+  :class="[
+    'option-btn',
+    { activeOption: selectedOption === option && !searchQuery }
+  ]"
+>
+  {{ option }}
+</button>
           </div>
         </div>
 
@@ -366,7 +370,7 @@ export default {
 
       selectedOption: "Sve",
 
-      searchOptions: ["Sve","Marketing i kreativne usluge", "Ugostiteljstvo i turizam", "Trgovina i prodaja", "Industrija i proizvodnja", "Alati i oprema", "Logistika i transport", "IT i tehnologija", "Građevina i nekretnine","Obrazovanje i edukacija", "Servis i održavanje"],
+      searchOptions: ["Sve","Marketing i kreativne usluge", "Ugostiteljstvo i turizam", "Trgovina i prodaja", "Industrija i proizvodnja", "Alati i oprema", "Logistika i transport", "IT i tehnologija", "Građevina i nekretnine","Obrazovanje i edukacija", "Servis i održavanje", "Glazba i zabava", "Gradnja, adaptacije i instalacije"],
     };
   },
 
@@ -511,35 +515,59 @@ export default {
 
   computed: {
     filteredCompanies() {
+
+    const query = this.searchQuery.toLowerCase().trim();
+
+
+    // SEARCH HAS PRIORITY
+    if (query) {
+
       return this.companies.filter((company) => {
-        const query = this.searchQuery.toLowerCase();
 
-        /* SEARCH COMPANY NAME */
-        const matchesName = company.name.toLowerCase().includes(query);
+        const searchableText = JSON.stringify(company)
+          .toLowerCase();
 
-        /* SEARCH CATEGORY */
-        const matchesCategorySearch = Array.isArray(company.category)
-          ? company.category.some((category) => category.toLowerCase().includes(query))
-          : company.category.toLowerCase().includes(query);
+        return searchableText.includes(query);
 
-        /* FILTER BUTTONS */
-        const matchesSelectedOption =
-          this.selectedOption === "Sve"
-            ? true
-            : Array.isArray(company.category)
-            ? company.category.includes(this.selectedOption)
-            : company.category === this.selectedOption;
-
-        return (matchesName || matchesCategorySearch) && matchesSelectedOption;
       });
-    },
+
+    }
+
+
+    // CATEGORY MODE
+    return this.companies.filter((company) => {
+
+      if (this.selectedOption === "Sve") {
+        return true;
+      }
+
+
+      return Array.isArray(company.category)
+        ? company.category.includes(this.selectedOption)
+        : company.category === this.selectedOption;
+
+    });
+
+  },
   },
 
   methods: {
 
-    closeSearch() {
-    this.searchExpanded = false;
-  },
+    selectCategory(option) {
+
+  this.searchQuery = "";
+
+  this.selectedOption = option;
+
+},
+
+    closeSearch(){
+
+ this.searchExpanded=false;
+
+ document.body.style.overflow="";
+
+},
 
     handleEsc(e) {
     if (e.key === "Escape") {
@@ -548,8 +576,17 @@ export default {
   },
 
     toggleSearch() {
-      this.searchExpanded = !this.searchExpanded;
-    },
+
+ this.searchExpanded = !this.searchExpanded;
+
+ if(this.searchExpanded){
+   document.body.style.overflow="hidden";
+ }
+ else{
+   document.body.style.overflow="";
+ }
+
+},
 
     callNumber(number) {
       window.location.href = `tel:${number}`;
@@ -585,34 +622,51 @@ export default {
     },
 
     animateCarousel() {
-      const items = document.querySelectorAll(".carousel-item");
-      const total = this.companies.length;
 
-      const spacing = Math.max(60, window.innerWidth * 0.22);
+    const items = document.querySelectorAll(".carousel-item");
 
-      items.forEach((item, i) => {
-        // IMPORTANT: ensure proper centering anchor once
-        gsap.set(item, {
-          xPercent: -50,
-          yPercent: -50,
+    const total = items.length;
+
+    const spacing = window.innerWidth * 0.18;
+
+
+    items.forEach((item,index)=>{
+
+
+        let offset = index - this.currentIndex;
+
+
+        if(offset > total/2){
+            offset -= total;
+        }
+
+        if(offset < -total/2){
+            offset += total;
+        }
+
+
+        gsap.to(item,{
+
+            x: offset * spacing,
+
+            scale: offset === 0 ? 1 : 0.8,
+
+            opacity: Math.abs(offset) <= 2 ? 1 : 0,
+
+            zIndex: Math.abs(offset) === 0 ? 10 : 1,
+
+            duration:0.5,
+
+            ease:"power2.out",
+
+            overwrite:true
+
         });
 
-        let offset = i - this.currentIndex;
 
-        if (offset > total / 2) offset -= total;
-        if (offset < -total / 2) offset += total;
+    });
 
-        gsap.to(item, {
-          x: offset * spacing,
-          scale: offset === 0 ? 0.85 : 0.85,
-          opacity: Math.abs(offset) > 2 ? 0 : 1,
-          zIndex: 1000 - Math.abs(offset),
-          duration: 0.6,
-          ease: "power2.out",
-          overwrite: true,
-        });
-      });
-    },
+},
 
     nextSlide() {
       this.currentIndex = (this.currentIndex + 1) % this.companies.length;
@@ -1030,21 +1084,23 @@ textarea:focus {
 }
 
 .carousel-item {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120px;
-  height: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+    position:absolute;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    pointer-events:none;
 }
 
+
 .carousel-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+
+    cursor:pointer;
+
+    pointer-events:auto;
 }
 
 .consent-box {
@@ -1297,7 +1353,7 @@ textarea:focus {
 }
 
 .search-panel{
-    position:absolute;
+    position:fixed;
     left:50%;
     transform:translateX(-50%);
     width:min(1100px,92%);
@@ -1311,6 +1367,7 @@ textarea:focus {
         0 30px 80px rgba(0,0,0,.18);
 
     z-index:9999;
+    -webkit-overflow-scrolling:touch;
 }
 
 .search-top {
@@ -1355,8 +1412,8 @@ textarea:focus {
   background: rgba(0, 31, 63, 0.06);
 }
 .activeOption {
-  background: #001f3f;
-  color: white;
+  background: #001f3f!important;
+  color: white!important;
 }
 .results-window {
   margin-top: 28px;
@@ -1460,5 +1517,4 @@ textarea:focus {
 }
 </style>
 
-
-phone-link
+carousel
