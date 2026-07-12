@@ -370,7 +370,7 @@ export default {
 
       selectedOption: "Sve",
 
-      searchOptions: ["Sve","Marketing i kreativne usluge", "Ugostiteljstvo i turizam", "Trgovina i prodaja", "Industrija i proizvodnja", "Alati i oprema", "Logistika i transport", "IT i tehnologija", "Građevina i nekretnine","Obrazovanje i edukacija", "Servis i održavanje", "Glazba i zabava", "Gradnja, adaptacije i instalacije"],
+      searchOptions: ["Sve","Marketing i kreativne usluge", "Ugostiteljstvo i turizam", "Trgovina i prodaja", "Industrija i proizvodnja", "Alati i oprema", "Logistika i transport", "IT i tehnologija", "Nekretnine i najam","Obrazovanje i edukacija", "Servis i održavanje", "Glazba i zabava", "Gradnja, adaptacije i instalacije"],
     };
   },
 
