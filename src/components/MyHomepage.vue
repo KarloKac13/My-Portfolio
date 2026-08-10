@@ -1516,5 +1516,3 @@ textarea:focus {
   height: 100%;
 }
 </style>
-
-carousel

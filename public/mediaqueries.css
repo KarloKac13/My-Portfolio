@@ -914,7 +914,7 @@ ul.p li {
         box-shadow: 0 8px 20px rgba(0, 31, 63, 0.15);
 }
 
-.search-expand-wrapper {
+/* .search-expand-wrapper2 {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -924,5 +924,5 @@ ul.p li {
     min-height: 100px;
     overflow: visible;
   
-}
+} */
 }
