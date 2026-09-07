@@ -791,8 +791,8 @@ p {
   font-size: 55px !important;
   font-family: "Montserrat", sans-serif;
   line-height: 50px !important;
-  text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001, 0 0 9px #001f,
-    0 0 14px #001f3f;
+  /* text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #001, 0 0 9px #001f,
+    0 0 14px #001f3f; */
 }
 
 .p2 {

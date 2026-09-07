@@ -151,6 +151,7 @@ export const companies = [
     logo: "/companyImages/domacaprica-removebg-preview.png",
     url: "https://www.instagram.com/domaca_prica__/",
     category: [
+      "Trgovina i prodaja",
       "Hrana i piće",
       "Domaća priča",
       "Domaca prica",
@@ -308,5 +309,11 @@ export const companies = [
       "soba",
       "cimer",
     ],
+  },
+  {
+    name: "PKK",
+    logo: "/companyImages/pkk.svg",
+    url: "https://pkk.si/",
+    category: ["Marketing i kreativne usluge"],
   },
 ];
